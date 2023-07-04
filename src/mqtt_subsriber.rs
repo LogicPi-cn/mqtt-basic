@@ -110,7 +110,7 @@ impl<'a> MqttSubsriber<'a> {
         info!("Processing requests...");
         for msg in rx.iter() {
             if let Some(msg) = msg {
-                process_fn(msg, &taos);
+                process_fn(msg, &taos).await;
             } else if !self.client.is_connected() {
                 if self.try_reconnect() {
                     info!("Resubscribe topics...");
