@@ -3,7 +3,7 @@ extern crate pretty_env_logger;
 
 use log::{error, info, warn};
 use mqtt::Message;
-use std::{sync::Arc, thread, time::Duration};
+use std::{future::Future, sync::Arc, thread, time::Duration};
 use taos::Taos;
 
 extern crate paho_mqtt as mqtt;
@@ -98,9 +98,10 @@ impl<'a> MqttSubsriber<'a> {
     }
 
     // processing rx incoming messages
-    pub async fn start<F>(&mut self, taos: &Taos, process_fn: F)
+    pub async fn start<F, Fut>(&mut self, taos: &Taos, process_fn: F)
     where
-        F: Fn(Message, &Taos) + Send + 'static,
+        F: Fn(Message, &Taos) -> Fut + Send + 'static,
+        Fut: Future<Output = ()> + Send + 'static,
     {
         let rx = self.client.start_consuming();
 
