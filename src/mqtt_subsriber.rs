@@ -100,7 +100,7 @@ impl<'a> MqttSubsriber<'a> {
     // processing rx incoming messages
     pub async fn start<F, Fut>(&mut self, taos: Arc<Taos>, process_fn: F)
     where
-        F: Fn(Message, &Taos) -> Fut + Send + 'static,
+        F: Fn(Message, Arc<Taos>) -> Fut + Send + 'static,
         Fut: Future<Output = ()> + Send + 'static,
     {
         let rx = self.client.start_consuming();
@@ -110,7 +110,7 @@ impl<'a> MqttSubsriber<'a> {
         info!("Processing requests...");
         for msg in rx.iter() {
             if let Some(msg) = msg {
-                process_fn(msg, &taos).await;
+                process_fn(msg, taos.clone()).await;
             } else if !self.client.is_connected() {
                 if self.try_reconnect() {
                     info!("Resubscribe topics...");
