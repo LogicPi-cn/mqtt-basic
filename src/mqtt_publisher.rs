@@ -1,4 +1,4 @@
-use log::{debug, error, info, warn};
+use log::{error, info, warn};
 use std::sync::Arc;
 use std::thread;
 use std::{process, time::Duration};

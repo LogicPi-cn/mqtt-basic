@@ -98,7 +98,7 @@ impl<'a> MqttSubsriber<'a> {
     }
 
     // processing rx incoming messages
-    pub async fn start<F, Fut>(&mut self, taos: &'static Taos, process_fn: F)
+    pub async fn start<F, Fut>(&mut self, taos: Arc<Taos>, process_fn: F)
     where
         F: Fn(Message, &Taos) -> Fut + Send + 'static,
         Fut: Future<Output = ()> + Send + 'static,
