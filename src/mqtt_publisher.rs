@@ -82,7 +82,7 @@ impl<'a> MqttClient<'a> {
 
     /// publis a message to the server
     pub fn publish(&mut self, topic: String, msg: String, qos: i32) -> Result<(), mqtt::Error> {
-        debug!("Publishing messages on the {:?} topic", topic);
+        info!("Pub [{:?}] <- {:?}", &topic, msg.clone());
         let msg = mqtt::Message::new(topic, msg.clone(), qos);
         let tok = self.client.publish(msg);
         match tok {
