@@ -56,10 +56,11 @@ impl<'a> MqttSubsriber<'a> {
             .payload("Consumer lost connection")
             .finalize();
 
+        let user_name = self.username;
         let conn_opts = mqtt::ConnectOptionsBuilder::new()
             .keep_alive_interval(Duration::from_secs(20))
-            .user_name(self.username.clone())
-            .password(self.password.clone())
+            .user_name(user_name)
+            .password(self.password)
             .clean_session(false)
             .will_message(lwt)
             .finalize();
