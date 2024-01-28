@@ -4,7 +4,6 @@ extern crate pretty_env_logger;
 use log::{error, info, warn};
 use mqtt::Message;
 use std::{future::Future, sync::Arc, thread, time::Duration};
-use taos::Taos;
 
 extern crate paho_mqtt as mqtt;
 
@@ -99,19 +98,17 @@ impl<'a> MqttSubsriber<'a> {
     }
 
     // processing rx incoming messages
-    pub async fn start<F, Fut>(&mut self, taos: Arc<Taos>, process_fn: F)
+    pub async fn start<F, Fut>(&mut self, process_fn: F)
     where
-        F: Fn(Message, Arc<Taos>) -> Fut + Send + 'static,
+        F: Fn(Message) -> Fut + Send + 'static,
         Fut: Future<Output = ()> + Send + 'static,
     {
         let rx = self.client.start_consuming();
 
-        // let taos = init_tdengine_adxl(database_url, db_name).await.unwrap();
-
         info!("Processing requests...");
         for msg in rx.iter() {
             if let Some(msg) = msg {
-                process_fn(msg, taos.clone()).await;
+                process_fn(msg).await;
             } else if !self.client.is_connected() {
                 if self.try_reconnect() {
                     info!("Resubscribe topics...");
