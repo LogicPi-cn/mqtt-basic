@@ -270,7 +270,7 @@ checksum = "8f232d6ef707e1956a43342693d2a31e72989554d58299d7a88738cc95b0d35c"
 
 [[package]]
 name = "mqtt-basic"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "log",
  "paho-mqtt",

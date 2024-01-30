@@ -7,30 +7,30 @@ use std::{future::Future, sync::Arc, thread, time::Duration};
 
 extern crate paho_mqtt as mqtt;
 
-pub struct MqttSubsriber<'a> {
+pub struct MqttSubsriber {
     client: Arc<mqtt::Client>,
-    host: &'a str,
-    client_id: &'a str,
-    topic: &'a str,
+    host: String,
+    client_id: String,
+    topic: String,
     qos: i32,
-    username: &'a str,
-    password: &'a str,
+    username: String,
+    password: String,
 }
 
-impl<'a> MqttSubsriber<'a> {
+impl MqttSubsriber {
     /// new mqtt server
     pub fn new(
-        host: &'a str,
-        client_id: &'a str,
-        username: &'a str,
-        password: &'a str,
-        topic: &'a str,
+        host: String,
+        client_id: String,
+        username: String,
+        password: String,
+        topic: String,
         qos: i32,
     ) -> Self {
         // create options
         let create_opts = mqtt::CreateOptionsBuilder::new()
-            .server_uri(host)
-            .client_id(client_id)
+            .server_uri(&host)
+            .client_id(&client_id)
             .finalize();
 
         // Create a client.
@@ -55,11 +55,11 @@ impl<'a> MqttSubsriber<'a> {
             .payload("Consumer lost connection")
             .finalize();
 
-        let user_name = self.username;
+        let user_name = &self.username;
         let conn_opts = mqtt::ConnectOptionsBuilder::new()
             .keep_alive_interval(Duration::from_secs(20))
             .user_name(user_name)
-            .password(self.password)
+            .password(&self.password)
             .clean_session(false)
             .will_message(lwt)
             .finalize();
@@ -77,7 +77,7 @@ impl<'a> MqttSubsriber<'a> {
     // Subscribes single topic
     pub fn subscribe_topic(&mut self) {
         info!("Subscribing topic [{:#?}]", self.topic);
-        if let Err(e) = self.client.subscribe(self.topic, self.qos) {
+        if let Err(e) = self.client.subscribe(&self.topic, self.qos) {
             error!("Error subscribes topics: {:?}", e);
         } else {
         }
@@ -125,7 +125,7 @@ impl<'a> MqttSubsriber<'a> {
         // If still connected, then disconnect now.
         if self.client.is_connected() {
             println!("Disconnecting");
-            self.client.unsubscribe(self.topic).unwrap();
+            self.client.unsubscribe(&self.topic).unwrap();
             self.client.disconnect(None).unwrap();
         }
         println!("Exiting");

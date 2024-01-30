@@ -4,30 +4,29 @@ use std::thread;
 use std::{process, time::Duration};
 
 extern crate paho_mqtt as mqtt;
-
-pub struct MqttClient<'a> {
+pub struct MqttClient {
     client: Arc<mqtt::Client>,
-    host: &'a str,
-    client_id: &'a str,
-    username: &'a str,
-    password: &'a str,
+    host: String,
+    client_id: String,
+    username: String,
+    password: String,
     clear: bool,
 }
 
-impl<'a> MqttClient<'a> {
+impl MqttClient {
     /// init client using default configuration
     pub fn new(
-        host: &'a str,
-        client_id: &'a str,
-        username: &'a str,
-        password: &'a str,
+        host: String,
+        client_id: String,
+        username: String,
+        password: String,
         clear: bool,
     ) -> Self {
         // Define the set of options for the create.
         // Use an ID for a persistent session.
         let create_opts = mqtt::CreateOptionsBuilder::new()
-            .server_uri(host)
-            .client_id(client_id)
+            .server_uri(&host)
+            .client_id(&client_id)
             .finalize();
 
         // Create a client.
@@ -51,8 +50,8 @@ impl<'a> MqttClient<'a> {
         // Define the set of options for the connection.
         let conn_opts = mqtt::ConnectOptionsBuilder::new()
             .keep_alive_interval(Duration::from_secs(20))
-            .user_name(self.username)
-            .password(self.password)
+            .user_name(&self.username)
+            .password(&self.password)
             .clean_session(self.clear)
             .finalize();
 
