@@ -5,6 +5,8 @@ use log::{error, info, warn};
 use mqtt::Message;
 use std::{future::Future, sync::Arc, thread, time::Duration};
 
+use crate::mqtt_publisher::MqttClient;
+
 extern crate paho_mqtt as mqtt;
 
 pub struct MqttSubsriber {
